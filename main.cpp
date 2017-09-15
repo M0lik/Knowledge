@@ -13,3 +13,8 @@ int main()
   std::cout << function() << std::endl;
   return 0;
 }
+
+//C++ 17
+//result:
+//21a
+//6
