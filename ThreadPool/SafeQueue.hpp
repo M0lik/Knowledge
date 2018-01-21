@@ -1,13 +1,3 @@
-//
-// SafeQueue.hpp for plazza in /home/margue_m/rendu/cpp_plazza
-//
-// Made by Mattéo Margueritte
-// Login   <margue_m@epitech.net>
-//
-// Started on  Fri Apr 28 14:39:43 2017 Mattéo Margueritte
-// Last update Fri Sep 22 17:49:40 2017 molik
-//
-
 #ifndef SAFEQUEUE_HPP_
 # define SAFEQUEUE_HPP_
 
