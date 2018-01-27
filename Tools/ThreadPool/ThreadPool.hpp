@@ -22,22 +22,22 @@ struct ThreadPool<func ()>
 };
 
 template<typename F, typename... ARG>
-class							ThreadPool<F (ARG...)>
+class								ThreadPool<F (ARG...)>
 {
 private:
-  std::atomic<bool>					_istask;
-  std::atomic<bool>					_state;
-  std::condition_variable				_condvar;
-  std::mutex						_mutex;
-  SafeQueue<Func<F(*)(ARG...), ARG...> >		_task;
-  std::vector<std::thread >				_thread;
+  std::atomic<bool>						_istask;
+  std::atomic<bool>						_state;
+  std::condition_variable					_condvar;
+  std::mutex							_mutex;
+  SafeQueue<Func<std::function<F(ARG...)>, ARG...> >		_task;
+  std::vector<std::thread >					_thread;
 
-  std::thread					newThread()
+  std::thread							newThread()
   {
     return (std::thread([this](){this->execThread();}));
   }
 
-  void							execTask()
+  void								execTask()
   {
      if (_istask)
       {	
@@ -49,7 +49,7 @@ private:
       }
   }
 
-  void							execThread()
+  void								execThread()
   {
     while (_state)
       {
@@ -81,10 +81,16 @@ public:
       it.join();
   }
 
-  template<typename Fun, typename... Arg>
-  void							pushTask(Fun func, Arg&& ... arg)
+
+  template< typename R, typename ... A >
+void test( R (*f)( A ... ) ) {
+    std::function< R( A ... ) > internal( f );
+    }
+  
+  void								pushTask(F (*func)(ARG ...), ARG&& ... arg)
   {
-    _task.push(Func<Fun, Arg...> (func, std::forward<Arg>(arg)...));
+    std::function<F (ARG ...)> f = func;
+    _task.push(Func<std::function<F(ARG ...)>, ARG...> (f, std::forward<ARG>(arg)...));
     _istask = true;
     _condvar.notify_one();
   }
