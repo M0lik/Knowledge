@@ -8,6 +8,7 @@
 # include <memory>
 # include <condition_variable>
 
+# include <utility>
 # include "SafeQueue.hpp"
 # include "FunctionWrapper.hpp"
 
@@ -81,9 +82,9 @@ public:
   }
 
   template<typename Fun, typename... Arg>
-  void							pushTask(Fun func, Arg... arg)
+  void							pushTask(Fun func, Arg&& ... arg)
   {
-    _task.push(Func<Fun, Arg...> (func, arg...));
+    _task.push(Func<Fun, Arg...> (func, std::forward<Arg>(arg)...));
     _istask = true;
     _condvar.notify_one();
   }
