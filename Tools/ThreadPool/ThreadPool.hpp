@@ -80,12 +80,6 @@ public:
     for (auto &it: _thread)
       it.join();
   }
-
-
-  template< typename R, typename ... A >
-void test( R (*f)( A ... ) ) {
-    std::function< R( A ... ) > internal( f );
-    }
   
   void								pushTask(F (*func)(ARG ...), ARG&& ... arg)
   {
