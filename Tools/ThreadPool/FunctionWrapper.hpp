@@ -21,7 +21,7 @@ public:
   {
     return run();
   };
-  decltype(auto) run()
+  decltype(auto) run() const
   {
     return std::apply(funct, _arg);
   };

@@ -12,24 +12,16 @@
 # include "SafeQueue.hpp"
 # include "FunctionWrapper.hpp"
 
-template<typename T>
-class ThreadPool
-{};
 
-template<typename func>
-struct ThreadPool<func ()>
-{
-};
 
-template<typename F, typename... ARG>
-class								ThreadPool<F (ARG...)>
+class								ThreadPool
 {
 private:
   std::atomic<bool>						_istask;
   std::atomic<bool>						_state;
   std::condition_variable					_condvar;
   std::mutex							_mutex;
-  SafeQueue<Func<std::function<F(ARG...)>, ARG...> >		_task;
+  SafeQueue<void(*)(void)>					_task;
   std::vector<std::thread >					_thread;
 
   std::thread							newThread()
@@ -45,7 +37,7 @@ private:
 	_task.pop();
 	if (_task.isEmpty())
 	  _istask = false;
-	t.run();
+	t();
       }
   }
 
@@ -80,13 +72,24 @@ public:
     for (auto &it: _thread)
       it.join();
   }
-  
+  static void lel(){};
+  template < typename F, typename... ARG >
   void								pushTask(F (*func)(ARG ...), ARG&& ... arg)
   {
     std::function<F (ARG ...)> f = func;
-    _task.push(Func<std::function<F(ARG ...)>, ARG...> (f, std::forward<ARG>(arg)...));
-    _istask = true;
-    _condvar.notify_one();
+    Func<std::function<F(ARG ...)>, ARG...> functmp(f, std::forward<ARG>(arg)...);
+
+
+    void (*lbda)(void);
+    lbda = [functmp](){
+      functmp.run();
+    };
+
+    std::cout << ((typeid(lbda)).name() == typeid(lel).name() ? "oui" : "Non") << std::endl;
+    //    _task.push(lbda);
+    
+    //    _istask = true;
+    //    _condvar.notify_one();
   }
 };
 

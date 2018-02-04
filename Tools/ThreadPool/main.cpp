@@ -21,7 +21,7 @@ int print(int l, char a)
 
 int main()
 {
-  ThreadPool<int (int, char)> p(8);
+  ThreadPool p(8);
   
   p.pushTask(print, 20, 'b');
   p.pushTask(print, 31, 'c');
